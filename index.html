@@ -1,0 +1,209 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caeduron: Echoes of the Ether - Mobile RPG</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #1C2526;
+      color: #C0C0C0;
+      font-family: 'Arial', sans-serif;
+    }
+    .hero {
+      background-image: url('hero.jpg');
+      background-size: cover;
+      background-position: center;
+      height: 60vh;
+    }
+    .section {
+      padding: 3rem 1rem;
+    }
+    .gallery img, .update-card {
+      transition: transform 0.3s ease;
+    }
+    .gallery img:hover, .update-card:hover {
+      transform: scale(1.05);
+    }
+    .video-embed {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+    }
+    .video-embed iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="fixed w-full bg-[#1C2526] bg-opacity-80 z-10 border-b border-[#D4AF37]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <div class="text-2xl font-bold text-[#D4AF37]">Caeduron: Echoes of the Ether</div>
+        <div class="space-x-4">
+          <a href="#home" class="text-[#C0C0C0] hover:text-[#D4AF37]">Home</a>
+          <a href="#updates" class="text-[#C0C0C0] hover:text-[#D4AF37]">Updates</a>
+          <a href="#gallery" class="text-[#C0C0C0] hover:text-[#D4AF37]">Screenshots</a>
+          <a href="#story" class="text-[#C0C0C0] hover:text-[#D4AF37]">Story</a>
+          <a href="#features" class="text-[#C0C0C0] hover:text-[#D4AF37]">Features</a>
+          <a href="#community" class="text-[#C0C0C0] hover:text-[#D4AF37]">Community</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero flex items-center justify-center text-center">
+    <div class="bg-[#1C2526] bg-opacity-70 p-6 rounded-lg border border-[#CD7F32]">
+      <h1 class="text-4xl md:text-6xl font-bold text-[#D4AF37] mb-4">Caeduron: Echoes of the Ether</h1>
+      <p class="text-lg md:text-xl text-[#C0C0C0] mb-6">A Skill-Based Fantasy RPG Coming Soon</p>
+      <a href="#community" class="bg-[#D4AF37] text-[#1C2526] px-6 py-3 rounded-full font-semibold hover:bg-[#CD7F32]">Join Our Discord</a>
+    </div>
+  </section>
+
+  <!-- Updates Section -->
+  <section id="updates" class="section bg-[#2A3439] text-center">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-4xl font-bold text-[#D4AF37] mb-6">Development Updates</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Update 1 -->
+        <div class="update-card p-6 bg-[#1C2526] rounded-lg border border-[#C0C0C0]">
+          <h3 class="text-2xl font-semibold text-[#D4AF37] mb-2">Update #1 - Concept Art Reveal</h3>
+          <p class="text-[#C0C0C0] mb-2">October 15, 2025</p>
+          <p class="text-[#C0C0C0]">We’ve finalized the concept art for Caeduron’s main regions! Check out our latest designs on Discord.</p>
+        </div>
+        <!-- Update 2 -->
+        <div class="update-card p-6 bg-[#1C2526] rounded-lg border border-[#C0C0C0]">
+          <h3 class="text-2xl font-semibold text-[#D4AF37] mb-2">Update #2 - Combat System Prototype</h3>
+          <p class="text-[#C0C0C0] mb-2">November 1, 2025</p>
+          <p class="text-[#C0C0C0]">Our skill-based combat system is in testing. Join our Discord to see early gameplay footage!</p>
+        </div>
+        <!-- Add new updates here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section id="gallery" class="section bg-[#1C2526] text-center">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-4xl font-bold text-[#D4AF37] mb-6">Screenshots</h2>
+      <div class="gallery grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <img src="screencap1.png" alt="Game Screenshot 1" class="rounded-lg w-full">
+        <img src="screencap2.png" alt="Game Screenshot 2" class="rounded-lg w-full">    
+      </div>
+    </div>
+  </section>
+
+  <!-- Story Section -->
+  <section id="story" class="section bg-[#2A3439] text-center">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-4xl font-bold text-[#D4AF37] mb-6">The Story</h2>
+      <p class="text-lg text-[#C0C0C0] mb-4">In the realm of Caeduron, a mystical ether binds all life. A creeping darkness threatens to unravel this balance. As a skilled hero, you must master ancient arts, forge alliances, and uncover secrets to restore harmony. Your choices shape the fate of the world in this immersive fantasy RPG.</p>
+      <p class="text-lg text-[#C0C0C0]">Explore ethereal landscapes, battle otherworldly creatures, and unravel a rich lore woven with magic and mystery.</p>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="section bg-[#1C2526]">
+    <div class="max-w-7xl mx-auto text-center">
+      <h2 class="text-4xl font-bold text-[#D4AF37] mb-6">Game Features</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="p-6 bg-[#2A3439] rounded-lg border border-[#CD7F32]">
+          <h3 class="text-2xl font-semibold text-[#D4AF37] mb-4">Skill-Based Combat</h3>
+          <p class="text-[#C0C0C0] mb-4">Master precise, real-time combat mechanics that reward strategy and reflexes.</p>
+          <div class="video-embed">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+          </div>
+        </div>
+        <div class="p-6 bg-[#2A3439] rounded-lg border border-[#CD7F32]">
+          <h3 class="text-2xl font-semibold text-[#D4AF37] mb-4">Deep RPG Progression</h3>
+          <p class="text-[#C0C0C0] mb-4">Customize your hero with diverse skill trees, gear, and magical abilities.</p>
+          <div class="video-embed">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+          </div>
+        </div>
+        <div class="p-6 bg-[#2A3439] rounded-lg border border-[#CD7F32]">
+          <h3 class="text-2xl font-semibold text-[#D4AF37] mb-4">Epic World</h3>
+          <p class="text-[#C0C0C0] mb-4">Explore a vibrant ethereal world filled with quests, secrets, and dynamic events.</p>
+          <div class="video-embed">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Community Section -->
+  <section id="community" class="section bg-[#2A3439] text-center">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-4xl font-bold text-[#D4AF37] mb-6">Join the Community</h2>
+      <p class="text-lg text-[#C0C0C0] mb-6">Stay updated and connect with other fans! Join our Discord to discuss the game, share feedback, and follow our progress.</p>
+      <a href="https://discord.gg/your-discord-invite" class="bg-[#D4AF37] text-[#1C2526] px-6 py-3 rounded-full font-semibold hover:bg-[#CD7F32]">Join Discord</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-[#2A3439] text-center py-6 border-t border-[#D4AF37]">
+    <p class="text-[#C0C0C0]">&copy; 2025 Caeduron: Echoes of the Ether. All rights reserved.</p>
+    <p class="text-[#C0C0C0]">Contact: info@caeduron.com</p>
+  </footer>
+
+  <script>
+    // Smooth scrolling for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
+</body>
+</html>
